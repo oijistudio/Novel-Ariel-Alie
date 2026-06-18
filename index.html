@@ -116,16 +116,15 @@
 
     /* ====================================================
        FEATURE — MATIKAN VISUAL SELEKSI TEKS (highlight biru)
-       Pembaca sudah punya menu sendiri (long-press paragraf →
-       Bookmark / Copy Quote), jadi seleksi teks bawaan browser
-       dimatikan di seluruh halaman, baik di mobile maupun
-       desktop, supaya tidak mengganggu pengalaman membaca.
-       -webkit-touch-callout dimatikan juga agar bubble
-       "Copy/Look Up" iOS tidak muncul saat long-press paragraf.
+       Diterapkan secara universal ke semua elemen (*) agar tidak
+       ada celah elemen yang masih menampilkan selection biru,
+       baik di mobile maupun desktop.
+       -webkit-touch-callout dimatikan agar popup "Copy/Look Up"
+       iOS tidak muncul saat long-press paragraf.
        Input & textarea dikecualikan supaya tetap bisa diketik
-       dan diseleksi seperti biasa (kotak pencarian & catatan).
+       dan diseleksi seperti biasa.
        ==================================================== */
-    body, p, h1, h2, h3, h4, span, a, button, li, .prose, .dialogue, .inner-thought {
+    * {
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
@@ -134,15 +133,16 @@
     }
 
     input, textarea, [contenteditable="true"] {
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-      user-select: text;
-      -webkit-touch-callout: default;
+      -webkit-user-select: text !important;
+      -moz-user-select: text !important;
+      -ms-user-select: text !important;
+      user-select: text !important;
+      -webkit-touch-callout: default !important;
     }
 
-    ::selection { background: transparent; }
-    ::-moz-selection { background: transparent; }
+    /* Transparankan semua selection highlight browser */
+    *::selection     { background: transparent !important; color: inherit; }
+    *::-moz-selection{ background: transparent !important; color: inherit; }
 
     /* Header & Navigation Bar */
     header {
@@ -8156,7 +8156,9 @@
         let longPressed = false;
         let pressStartX = 0;
         let pressStartY = 0;
-        const MOVE_CANCEL_THRESHOLD = 10; // px toleransi gerak jari sebelum dianggap scroll
+        // 5px: threshold sangat kecil agar gerakan scroll sekecil apapun
+        // langsung membatalkan long-press sebelum timer selesai.
+        const MOVE_CANCEL_THRESHOLD = 5;
 
         const onPressStart = (e) => {
           longPressed = false;
@@ -8181,6 +8183,7 @@
           const dy = Math.abs(e.touches[0].clientY - pressStartY);
           if (dx > MOVE_CANCEL_THRESHOLD || dy > MOVE_CANCEL_THRESHOLD) {
             clearTimeout(pressTimer);
+            pressTimer = null; // Pastikan timer tidak bisa terpicu ganda
             button.classList.remove('pressing');
           }
         };
@@ -8601,7 +8604,9 @@
       let pressTarget = null;
       let pressStartX = 0;
       let pressStartY = 0;
-      const MOVE_CANCEL_THRESHOLD = 10; // px toleransi gerak jari sebelum dianggap scroll
+      // 5px: threshold sangat kecil agar gerakan scroll sekecil apapun
+      // langsung membatalkan long-press sebelum menu Bookmark/Quote muncul.
+      const MOVE_CANCEL_THRESHOLD = 5;
 
       const onPressStart = (e) => {
         const target = e.target.closest(getParagraphSelector());
@@ -8629,6 +8634,7 @@
         const dy = Math.abs(e.touches[0].clientY - pressStartY);
         if (dx > MOVE_CANCEL_THRESHOLD || dy > MOVE_CANCEL_THRESHOLD) {
           clearTimeout(pressTimer);
+          pressTimer = null; // Pastikan timer tidak bisa terpicu ganda
           if (pressTarget) pressTarget.classList.remove('para-pressing');
         }
       };
