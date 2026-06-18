@@ -1,0 +1,56 @@
+{
+  "name": "Selamanya Itu Lama Banget",
+  "short_name": "Ariel & Alie",
+  "description": "Kumpulan Kisah Lengkap Ariel & Alie — Novel interaktif yang bisa dibaca offline",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#12110f",
+  "theme_color": "#e0926d",
+  "lang": "id",
+  "categories": ["books", "entertainment"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "asset/preview.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Reader mode — Selamanya Itu Lama Banget"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Lanjut Membaca",
+      "short_name": "Lanjut",
+      "description": "Buka reader dan lanjutkan dari bab terakhir",
+      "url": "./"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+Novel-main.zip
+generate_icons.py
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

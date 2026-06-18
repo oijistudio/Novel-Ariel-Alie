@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background gradient warm dark -->
+    <radialGradient id="bg" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#2c1e14"/>
+      <stop offset="100%" stop-color="#12110f"/>
+    </radialGradient>
+    <!-- Accent warm glow -->
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e0926d" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#e0926d" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Text gradient -->
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5ece5"/>
+      <stop offset="100%" stop-color="#eadecc"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" ry="80" fill="url(#bg)"/>
+
+  <!-- Subtle glow overlay -->
+  <ellipse cx="256" cy="200" rx="200" ry="160" fill="url(#glow)"/>
+
+  <!-- Open book shape -->
+  <!-- Left page -->
+  <path d="M110 170 Q110 155 130 150 L248 155 L248 360 Q200 355 155 362 Q115 368 110 345 Z"
+        fill="#1c1a17" stroke="#e0926d" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Right page -->
+  <path d="M264 155 L382 150 Q402 155 402 170 L402 345 Q397 368 357 362 Q312 355 264 360 Z"
+        fill="#1c1a17" stroke="#e0926d" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Spine line -->
+  <line x1="256" y1="150" x2="256" y2="365" stroke="#e0926d" stroke-width="3" stroke-linecap="round"/>
+  <!-- Book shadow bottom -->
+  <path d="M115 345 Q110 365 160 370 Q210 375 248 368 L264 368 Q302 375 352 370 Q402 365 397 345"
+        fill="none" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.4"/>
+
+  <!-- Left page lines (text simulation) -->
+  <line x1="135" y1="200" x2="235" y2="200" stroke="#e0926d" stroke-width="2" stroke-opacity="0.5" stroke-linecap="round"/>
+  <line x1="135" y1="220" x2="235" y2="220" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
+  <line x1="135" y1="240" x2="220" y2="240" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
+  <line x1="135" y1="260" x2="230" y2="260" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
+  <line x1="135" y1="280" x2="215" y2="280" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
+  <line x1="135" y1="300" x2="235" y2="300" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
+  <line x1="135" y1="320" x2="225" y2="320" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
+
+  <!-- Right page — ornament + lines -->
+  <!-- Ornament star ✦ -->
+  <text x="333" y="210" text-anchor="middle" font-family="Georgia, serif" font-size="26"
+        fill="#e0926d" opacity="0.85">✦</text>
+  <line x1="277" y1="235" x2="377" y2="235" stroke="#e0926d" stroke-width="2" stroke-opacity="0.5" stroke-linecap="round"/>
+  <line x1="277" y1="255" x2="370" y2="255" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
+  <line x1="277" y1="275" x2="375" y2="275" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
+  <line x1="277" y1="295" x2="365" y2="295" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
+  <line x1="277" y1="315" x2="372" y2="315" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
+  <line x1="277" y1="335" x2="360" y2="335" stroke="#e0926d" stroke-width="1.5" stroke-opacity="0.3" stroke-linecap="round"/>
+
+  <!-- Linked pinky fingers (janji kelingking) symbol at bottom -->
+  <g transform="translate(256, 415)" opacity="0.7">
+    <!-- Left hand finger -->
+    <path d="M-22 0 Q-28 -10 -20 -18 Q-12 -24 -8 -16 L-8 0"
+          fill="none" stroke="#e0926d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Right hand finger -->
+    <path d="M22 0 Q28 -10 20 -18 Q12 -24 8 -16 L8 0"
+          fill="none" stroke="#e0926d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Hook link -->
+    <path d="M-8 -16 Q0 -22 8 -16" fill="none" stroke="#e0926d" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- App name text — italic serif feel -->
+  <text x="256" y="468" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="18" font-style="italic" font-weight="400"
+        fill="#eadecc" opacity="0.75" letter-spacing="1">
+    Selamanya
+  </text>
+</svg>
