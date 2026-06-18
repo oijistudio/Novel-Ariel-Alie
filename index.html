@@ -1755,78 +1755,7 @@
       }
     }
 
-    /* ====================================================
-       FEATURE — PARAGRAPH BOOKMARK SYSTEM
-       Long-press pada paragraf memunculkan mini action menu.
-       ==================================================== */
-    .prose p, .dialogue, .inner-thought {
-      position: relative;
-      cursor: pointer;
-    }
-    .prose p.bookmarked::before {
-      content: '★';
-      position: absolute;
-      left: -1.3rem;
-      top: 0.1rem;
-      color: var(--accent);
-      font-size: 0.85rem;
-      opacity: 0.85;
-    }
-    .prose p.para-pressing,
-    .dialogue.para-pressing,
-    .inner-thought.para-pressing {
-      background: var(--accent-light);
-      border-radius: 6px;
-      transition: background 0.15s ease;
-    }
-
-    /* Mini Action Menu (muncul saat long-press paragraf) */
-    .para-action-menu {
-      position: fixed;
-      z-index: 600;
-      background: var(--bg-card);
-      border: 1px solid var(--rule);
-      border-radius: 12px;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.18);
-      display: flex;
-      overflow: hidden;
-      opacity: 0;
-      transform: translateY(8px) scale(0.96);
-      transition: opacity 0.18s ease, transform 0.18s ease;
-      pointer-events: none;
-    }
-    .para-action-menu.visible {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: auto;
-    }
-    .para-action-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.65rem 1rem;
-      background: none;
-      border: none;
-      color: var(--ink);
-      font-family: var(--font-sans);
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      white-space: nowrap;
-      border-right: 1px solid var(--rule);
-      transition: background 0.15s ease;
-    }
-    .para-action-btn:last-child { border-right: none; }
-    .para-action-btn:hover { background: var(--accent-light); color: var(--accent); }
-    .para-action-menu-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 599;
-      display: none;
-    }
-    .para-action-menu-overlay.visible { display: block; }
-
-    /* Highlight scroll-target sesaat setelah lompat ke paragraf bookmark */
+    /* Highlight scroll-target sesaat setelah lompat ke paragraf hasil pencarian */
     .para-highlight-flash {
       animation: paraHighlightFlash 1.8s ease;
     }
@@ -1959,47 +1888,7 @@
       gap: 0.6rem;
     }
 
-    /* Bookmark drawer list item */
-    .bookmark-item {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      text-align: left;
-      padding: 0.7rem 0.8rem;
-      border: none;
-      background: none;
-      border-radius: 8px;
-      cursor: pointer;
-      color: var(--ink);
-      margin-bottom: 0.25rem;
-      transition: background 0.2s ease;
-    }
-    .bookmark-item:hover { background: var(--accent-light); }
-    .bookmark-item .bm-chapter {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--accent);
-      margin-bottom: 0.2rem;
-      font-weight: 600;
-    }
-    .bookmark-item .bm-snippet {
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-size: 0.85rem;
-      line-height: 1.5;
-      color: var(--ink);
-    }
-    .bookmark-item .bm-remove {
-      align-self: flex-end;
-      font-size: 0.68rem;
-      color: var(--muted);
-      margin-top: 0.3rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-    .bookmark-item .bm-remove:hover { color: #e0524f; }
+
 
     /* ====================================================
        FEATURE — FULL TEXT SEARCH (snippet & highlight)
@@ -2366,7 +2255,7 @@
         <button id="drawer-search-clear" style="display: none;" title="Bersihkan pencarian">&times;</button>
       </div>
 
-      <!-- Tab Buttons (All / Favorites / Bookmarks) -->
+      <!-- Tab Buttons (All / Favorites) -->
       <div class="drawer-tabs">
         <button class="tab-btn active" id="tab-all-btn">
           <span>Semua</span>
@@ -2378,13 +2267,7 @@
           <span>Favorit</span>
           <span class="fav-count-badge" id="fav-count">0</span>
         </button>
-        <button class="tab-btn" id="tab-bookmark-btn">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;">
-            <path d="M5 3a2 2 0 0 0-2 2v16l9-5 9 5V5a2 2 0 0 0-2-2H5z"/>
-          </svg>
-          <span>Bookmark</span>
-          <span class="fav-count-badge" id="bookmark-count">0</span>
-        </button>
+
       </div>
     </div>
     <div class="drawer-list" id="drawer-list">
@@ -2513,14 +2396,7 @@
     </div>
   </div>
 
-  <!-- ============================================================
-       PARAGRAPH ACTION MENU — Muncul saat paragraf di-long-press
-       ============================================================ -->
-  <div class="para-action-menu-overlay" id="para-action-overlay"></div>
-  <div class="para-action-menu" id="para-action-menu" role="menu" aria-label="Aksi Paragraf">
-    <button class="para-action-btn" id="para-action-bookmark" role="menuitem">⭐ Bookmark</button>
-    <button class="para-action-btn" id="para-action-quote" role="menuitem">❝ Copy Quote</button>
-  </div>
+
 
   <!-- ============================================================
        RELATIONSHIP MAP — Modal fullscreen peta hubungan karakter
@@ -7950,11 +7826,10 @@
         });
       }
 
-      // Listener Perpindahan Tab (Semua / Favorit / Bookmark)
+      // Listener Perpindahan Tab (Semua / Favorit)
       const tabAll = document.getElementById('tab-all-btn');
       const tabFav = document.getElementById('tab-fav-btn');
-      const tabBookmark = document.getElementById('tab-bookmark-btn');
-      const allTabs = [tabAll, tabFav, tabBookmark].filter(Boolean);
+      const allTabs = [tabAll, tabFav].filter(Boolean);
 
       function activateTab(tabName, btn) {
         currentTab = tabName;
@@ -7965,10 +7840,8 @@
 
       if (tabAll) tabAll.addEventListener('click', () => activateTab('all', tabAll));
       if (tabFav) tabFav.addEventListener('click', () => activateTab('favorites', tabFav));
-      if (tabBookmark) tabBookmark.addEventListener('click', () => activateTab('bookmarks', tabBookmark));
 
       updateFavCount();
-      updateBookmarkCount();
 
       menuBtn.addEventListener('click', toggleDrawer);
       drawerClose.addEventListener('click', toggleDrawer);
@@ -7986,8 +7859,7 @@
       // === FEATURE: Private Notes Panel ===
       initNotesPanel();
 
-      // === FEATURE: Paragraph Bookmark & Long-Press Action Menu ===
-      initParagraphActions();
+      // (Paragraph Bookmark & Long-Press Action Menu dihapus)
 
       // === FEATURE C: Relationship Map ===
       initRelationshipMap();
@@ -8009,34 +7881,44 @@
         if (e.key === 'ArrowRight') changeChapter(1);
         if (e.key === 'Escape') {
           closeNotesPanel();
-          hideParaActionMenu();
           closeRelationshipMap();
         }
       });
 
       // ====================================================
       // FEATURE — SWIPE GANTI BAB (HANYA AKTIF SAAT FOCUS MODE)
-      // Di luar Focus Mode, swipe kiri/kanan dimatikan supaya tidak
-      // tertukar dengan gestur scroll biasa. Swipe baru berfungsi
-      // ketika Focus Mode menyala (lihat initFocusMode → showBottomHint).
+      // Swipe baru berfungsi ketika Focus Mode menyala.
+      // Double-guard di touchend memastikan swipe tidak pernah
+      // terpicu saat Focus Mode benar-benar nonaktif.
       // ====================================================
       let touchStartX = 0;
       let touchStartY = 0;
-      let touchEndX = 0;
       let swipeTrackingActive = false;
 
       document.addEventListener('touchstart', (e) => {
-        swipeTrackingActive = document.body.classList.contains('focus-mode') &&
-          !!e.target.closest('main');
-        if (!swipeTrackingActive || !e.changedTouches[0]) return;
+        // Reset state terlebih dahulu di setiap touchstart
+        swipeTrackingActive = false;
+        touchStartX = 0;
+        touchStartY = 0;
+        // Hanya aktifkan jika Focus Mode benar-benar ON
+        if (!document.body.classList.contains('focus-mode')) return;
+        if (!e.changedTouches || !e.changedTouches[0]) return;
+        if (!e.target || !e.target.closest || !e.target.closest('main')) return;
+        swipeTrackingActive = true;
         touchStartX = e.changedTouches[0].screenX;
         touchStartY = e.changedTouches[0].screenY;
-      }, false);
+      }, { passive: true });
 
       document.addEventListener('touchend', (e) => {
-        if (!swipeTrackingActive || !e.changedTouches[0]) return;
+        // Double-guard: cek ulang focus-mode di touchend agar tidak terpicu
+        // meskipun swipeTrackingActive entah bagaimana masih bernilai true.
+        if (!swipeTrackingActive || !document.body.classList.contains('focus-mode')) {
+          swipeTrackingActive = false;
+          return;
+        }
+        if (!e.changedTouches || !e.changedTouches[0]) { swipeTrackingActive = false; return; }
         swipeTrackingActive = false;
-        touchEndX = e.changedTouches[0].screenX;
+        const touchEndX = e.changedTouches[0].screenX;
         const touchEndY = e.changedTouches[0].screenY;
         const threshold = 80;
         const swipeLength = touchEndX - touchStartX;
@@ -8045,13 +7927,11 @@
         if (Math.abs(swipeLength) > threshold && verticalDrift < 60) {
           changeChapter(swipeLength < 0 ? 1 : -1);
         }
-      }, false);
+      }, { passive: true });
 
       // Tap pada area chapter content saat Focus Mode aktif → toggle UI sementara
       chapterContainer.addEventListener('click', (e) => {
         if (!document.body.classList.contains('focus-mode')) return;
-        // Hindari konflik dengan long-press paragraf (yang sudah menangani klik sendiri)
-        if (e.target.closest('.para-action-menu')) return;
         document.body.classList.toggle('focus-ui-visible');
       });
     }
@@ -8086,15 +7966,11 @@
       }
     }
 
-    // Build Sidebar Chapter List dengan Dukungan Pencarian, Filter Favorit/Bookmark, & Long-Press
+    // Build Sidebar Chapter List dengan Dukungan Pencarian, Filter Favorit, & Long-Press
     function buildDrawerMenu() {
       drawerList.innerHTML = '';
 
-      // Tab "Bookmark" menampilkan daftar paragraf yang disimpan, bukan daftar bab
-      if (currentTab === 'bookmarks') {
-        renderBookmarksList();
-        return;
-      }
+
 
       const query = searchQuery.trim().toLowerCase();
       const isSearching = query !== '';
@@ -8328,6 +8204,10 @@
       return `${prefix}${before}<mark>${match}</mark>${after}${suffix}`;
     }
 
+    function getParagraphSelector() {
+      return '.prose p, .dialogue, .inner-thought';
+    }
+
     // Setelah goTo() merender bab tujuan, cari paragraf pertama yang mengandung query lalu scroll & flash-highlight
     function scrollToTextMatch(query) {
       const lowerQuery = query.toLowerCase();
@@ -8344,7 +8224,7 @@
         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         target.classList.add('para-highlight-flash');
         setTimeout(() => target.classList.remove('para-highlight-flash'), 1800);
-      }, 400); // Beri waktu transisi render bab selesai, sama seperti scrollToBookmarkedParagraph()
+      }, 400); // Beri waktu transisi render bab selesai
     }
 
     /* ===============================================================
@@ -8553,320 +8433,6 @@
       const d = new Date(timestamp);
       const formatted = d.toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
       el.textContent = `Diedit ${formatted}`;
-    }
-
-    /* ===============================================================
-       FEATURE — PARAGRAPH BOOKMARK SYSTEM
-       Long-press paragraf (.prose p, .dialogue, .inner-thought)
-       memunculkan mini action menu. Bookmark disimpan ke localStorage
-       dengan key 'novel-paragraph-bookmarks', berisi array of:
-       { chapterIndex, paragraphIndex, textSnippet, timestamp }
-    =============================================================== */
-    let paragraphBookmarks = [];
-    try {
-      paragraphBookmarks = JSON.parse(localStorage.getItem('novel-paragraph-bookmarks')) || [];
-    } catch (err) {
-      paragraphBookmarks = [];
-    }
-
-    let activeParaTarget = null; // Elemen paragraf yang sedang dipilih untuk action menu
-
-    function getParagraphSelector() {
-      return '.prose p, .dialogue, .inner-thought';
-    }
-
-    function findBookmark(chapterIndex, paragraphIndex) {
-      return paragraphBookmarks.find(b => b.chapterIndex === chapterIndex && b.paragraphIndex === paragraphIndex);
-    }
-
-    function updateBookmarkCount() {
-      const countEl = document.getElementById('bookmark-count');
-      if (countEl) countEl.textContent = paragraphBookmarks.length;
-    }
-
-    // Tandai paragraf yang sudah dibookmark dengan visual marker (dipanggil setiap render bab)
-    function applyBookmarkMarkers() {
-      const paras = chapterContainer.querySelectorAll(getParagraphSelector());
-      paras.forEach((p, pIdx) => {
-        const bm = findBookmark(currentChapterIndex, pIdx);
-        p.classList.toggle('bookmarked', !!bm);
-      });
-    }
-
-    function initParagraphActions() {
-      const menu = document.getElementById('para-action-menu');
-      const menuOverlay = document.getElementById('para-action-overlay');
-      const bookmarkBtn = document.getElementById('para-action-bookmark');
-      const quoteBtn = document.getElementById('para-action-quote'); // FEATURE A — Copy Quote
-
-      let pressTimer = null;
-      let longPressTriggered = false;
-      let pressTarget = null;
-      let pressStartX = 0;
-      let pressStartY = 0;
-      // 5px: threshold sangat kecil agar gerakan scroll sekecil apapun
-      // langsung membatalkan long-press sebelum menu Bookmark/Quote muncul.
-      const MOVE_CANCEL_THRESHOLD = 5;
-
-      const onPressStart = (e) => {
-        const target = e.target.closest(getParagraphSelector());
-        if (!target || !chapterContainer.contains(target)) return;
-        longPressTriggered = false;
-        pressTarget = target;
-        if (e.touches && e.touches[0]) {
-          pressStartX = e.touches[0].clientX;
-          pressStartY = e.touches[0].clientY;
-        }
-        target.classList.add('para-pressing');
-        pressTimer = setTimeout(() => {
-          longPressTriggered = true;
-          target.classList.remove('para-pressing');
-          showParaActionMenu(target, e);
-        }, 650);
-      };
-
-      // Kalau jari bergerak (user sedang scroll halaman novel, bukan menahan
-      // paragraf), batalkan timer long-press supaya menu Bookmark/Copy Quote
-      // tidak ke-trigger tanpa sengaja saat mengscroll.
-      const onPressMove = (e) => {
-        if (!pressTimer || !e.touches || !e.touches[0]) return;
-        const dx = Math.abs(e.touches[0].clientX - pressStartX);
-        const dy = Math.abs(e.touches[0].clientY - pressStartY);
-        if (dx > MOVE_CANCEL_THRESHOLD || dy > MOVE_CANCEL_THRESHOLD) {
-          clearTimeout(pressTimer);
-          pressTimer = null; // Pastikan timer tidak bisa terpicu ganda
-          if (pressTarget) pressTarget.classList.remove('para-pressing');
-        }
-      };
-
-      const onPressEnd = (e) => {
-        clearTimeout(pressTimer);
-        const target = e.target.closest ? e.target.closest(getParagraphSelector()) : null;
-        if (target) target.classList.remove('para-pressing');
-        if (pressTarget) pressTarget.classList.remove('para-pressing');
-      };
-
-      chapterContainer.addEventListener('mousedown', onPressStart);
-      chapterContainer.addEventListener('mouseup', onPressEnd);
-      chapterContainer.addEventListener('mouseleave', onPressEnd);
-      chapterContainer.addEventListener('touchstart', onPressStart, { passive: true });
-      chapterContainer.addEventListener('touchmove', onPressMove, { passive: true });
-      chapterContainer.addEventListener('touchend', onPressEnd);
-      chapterContainer.addEventListener('touchcancel', onPressEnd);
-
-      bookmarkBtn.addEventListener('click', () => {
-        if (activeParaTarget) toggleParagraphBookmark(activeParaTarget);
-        hideParaActionMenu();
-      });
-
-      // FEATURE A — FAVORITE QUOTE MODE: salin paragraf terpilih ke clipboard
-      if (quoteBtn) {
-        quoteBtn.addEventListener('click', () => {
-          if (activeParaTarget) copyParagraphAsQuote(activeParaTarget);
-          hideParaActionMenu();
-        });
-      }
-
-      menuOverlay.addEventListener('click', hideParaActionMenu);
-    }
-
-    /* ===============================================================
-       FEATURE A — FAVORITE QUOTE MODE (Copy Quote)
-       Menyalin teks paragraf yang dipilih ke clipboard dengan format
-       kutipan rapi (judul novel + info bab), lengkap dengan fallback
-       aman jika navigator.clipboard tidak didukung browser.
-    =============================================================== */
-    function copyParagraphAsQuote(target) {
-      const ch = allChapters[currentChapterIndex];
-      if (!ch) return;
-
-      const quoteText = target.textContent.trim();
-      const formatted = `"${quoteText}"\n— Selamanya Itu Lama Banget\n${ch.num}: ${ch.title}`;
-
-      const onSuccess = () => {
-        showToast('❝ Kutipan berhasil disalin');
-        vibrate(15);
-      };
-
-      const onFailure = () => {
-        showToast('Gagal menyalin kutipan');
-      };
-
-      // Jalur utama: Clipboard API modern (butuh secure context / HTTPS)
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(formatted).then(onSuccess).catch(() => {
-          fallbackCopyToClipboard(formatted, onSuccess, onFailure);
-        });
-      } else {
-        // Fallback aman untuk browser/konteks yang tidak mendukung Clipboard API
-        fallbackCopyToClipboard(formatted, onSuccess, onFailure);
-      }
-    }
-
-    // Fallback copy menggunakan textarea sementara + document.execCommand
-    function fallbackCopyToClipboard(text, onSuccess, onFailure) {
-      try {
-        const tempArea = document.createElement('textarea');
-        tempArea.value = text;
-        tempArea.style.position = 'fixed';
-        tempArea.style.left = '-9999px';
-        tempArea.style.top = '0';
-        document.body.appendChild(tempArea);
-        tempArea.focus();
-        tempArea.select();
-        const ok = document.execCommand('copy');
-        document.body.removeChild(tempArea);
-        if (ok) {
-          onSuccess();
-        } else {
-          onFailure();
-        }
-      } catch (err) {
-        onFailure();
-      }
-    }
-
-    function getParagraphIndex(target) {
-      const paras = Array.from(chapterContainer.querySelectorAll(getParagraphSelector()));
-      return paras.indexOf(target);
-    }
-
-    function showParaActionMenu(target, e) {
-      activeParaTarget = target;
-      const menu = document.getElementById('para-action-menu');
-      const menuOverlay = document.getElementById('para-action-overlay');
-      const bookmarkBtn = document.getElementById('para-action-bookmark');
-
-      const pIdx = getParagraphIndex(target);
-      const isBookmarked = !!findBookmark(currentChapterIndex, pIdx);
-      bookmarkBtn.textContent = isBookmarked ? '★ Hapus Bookmark' : '⭐ Bookmark Paragraph';
-
-      // Posisikan menu di dekat titik tekan, dengan clamp agar tidak keluar viewport
-      const touch = (e.changedTouches && e.changedTouches[0]) || e;
-      const rect = target.getBoundingClientRect();
-      const x = touch && touch.clientX ? touch.clientX : rect.left + rect.width / 2;
-      const y = touch && touch.clientY ? touch.clientY : rect.top;
-
-      menu.style.display = 'flex';
-      // Render dulu untuk mengukur lebar menu sebelum clamp posisi
-      requestAnimationFrame(() => {
-        const menuRect = menu.getBoundingClientRect();
-        let left = x - menuRect.width / 2;
-        let top = y - menuRect.height - 14;
-        left = Math.max(8, Math.min(left, window.innerWidth - menuRect.width - 8));
-        if (top < 8) top = y + 20; // Jika terlalu dekat atas viewport, tampilkan di bawah titik tekan
-        menu.style.left = `${left}px`;
-        menu.style.top = `${top}px`;
-        menu.classList.add('visible');
-      });
-
-      menuOverlay.classList.add('visible');
-      vibrate(12);
-    }
-
-    function hideParaActionMenu() {
-      const menu = document.getElementById('para-action-menu');
-      const menuOverlay = document.getElementById('para-action-overlay');
-      menu.classList.remove('visible');
-      menuOverlay.classList.remove('visible');
-      activeParaTarget = null;
-    }
-
-    function toggleParagraphBookmark(target) {
-      const pIdx = getParagraphIndex(target);
-      const existing = findBookmark(currentChapterIndex, pIdx);
-      const ch = allChapters[currentChapterIndex];
-
-      if (existing) {
-        paragraphBookmarks = paragraphBookmarks.filter(b => b !== existing);
-        target.classList.remove('bookmarked');
-        showToast('Bookmark paragraf dihapus');
-      } else {
-        const snippet = target.textContent.trim().slice(0, 140);
-        paragraphBookmarks.push({
-          chapterIndex: currentChapterIndex,
-          paragraphIndex: pIdx,
-          textSnippet: snippet,
-          timestamp: Date.now()
-        });
-        target.classList.add('bookmarked');
-        showToast('⭐ Paragraf disimpan ke Bookmark');
-      }
-
-      localStorage.setItem('novel-paragraph-bookmarks', JSON.stringify(paragraphBookmarks));
-      vibrate(15);
-      updateBookmarkCount();
-      if (currentTab === 'bookmarks') buildDrawerMenu();
-    }
-
-    // Render daftar bookmark paragraf di dalam drawer (tab "Bookmark")
-    function renderBookmarksList() {
-      if (paragraphBookmarks.length === 0) {
-        const emptyState = document.createElement('div');
-        emptyState.className = 'drawer-empty-state';
-        emptyState.innerHTML = `
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-          </svg>
-          <span style="font-weight: 500;">Belum ada bagian yang kamu simpan.</span>
-          <span style="font-size: 0.72rem; opacity: 0.7; max-width: 220px; line-height: 1.4;">Tekan & tahan paragraf mana pun untuk membookmark-nya.</span>
-        `;
-        drawerList.appendChild(emptyState);
-        return;
-      }
-
-      // Urutkan dari yang paling baru disimpan
-      const sorted = [...paragraphBookmarks].sort((a, b) => b.timestamp - a.timestamp);
-
-      sorted.forEach(bm => {
-        const ch = allChapters[bm.chapterIndex];
-        if (!ch) return; // Guard jika data bab berubah/dihapus
-
-        const item = document.createElement('button');
-        item.className = 'bookmark-item';
-
-        const chLabel = document.createElement('div');
-        chLabel.className = 'bm-chapter';
-        chLabel.textContent = `${ch.num} — ${ch.title}`;
-
-        const snippet = document.createElement('div');
-        snippet.className = 'bm-snippet';
-        snippet.textContent = `"${bm.textSnippet}${bm.textSnippet.length >= 140 ? '…' : ''}"`;
-
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'bm-remove';
-        removeBtn.textContent = 'Hapus';
-        removeBtn.onclick = (e) => {
-          e.stopPropagation();
-          paragraphBookmarks = paragraphBookmarks.filter(b => b !== bm);
-          localStorage.setItem('novel-paragraph-bookmarks', JSON.stringify(paragraphBookmarks));
-          updateBookmarkCount();
-          renderBookmarksList();
-        };
-
-        item.appendChild(chLabel);
-        item.appendChild(snippet);
-        item.appendChild(removeBtn);
-
-        item.onclick = () => {
-          goTo(bm.chapterIndex, () => scrollToBookmarkedParagraph(bm.paragraphIndex));
-          toggleDrawer();
-        };
-
-        drawerList.appendChild(item);
-      });
-    }
-
-    // Setelah pindah bab, scroll ke paragraf yang dibookmark dan beri flash highlight
-    function scrollToBookmarkedParagraph(paragraphIndex) {
-      const paras = chapterContainer.querySelectorAll(getParagraphSelector());
-      const target = paras[paragraphIndex];
-      if (!target) return;
-      setTimeout(() => {
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        target.classList.add('para-highlight-flash');
-        setTimeout(() => target.classList.remove('para-highlight-flash'), 1800);
-      }, 400); // Beri waktu untuk transisi render bab selesai
     }
 
     /* ===============================================================
@@ -9179,7 +8745,6 @@
         chapterContainer.innerHTML = contentHtml;
 
         updateFontSize();
-        applyBookmarkMarkers(); // Tandai paragraf yang sudah dibookmark untuk bab ini
 
         prevBtn.disabled = currentChapterIndex === 0;
         nextBtn.disabled = currentChapterIndex === allChapters.length - 1;
@@ -9208,7 +8773,7 @@
         }
 
         // Jalankan callback (jika ada) setelah konten bab selesai dirender — dipakai mis. oleh
-        // navigasi "lompat ke paragraf bookmark" agar scroll-target menunggu DOM siap.
+        // navigasi "lompat ke hasil pencarian" agar scroll-target menunggu DOM siap.
         if (typeof onComplete === 'function') onComplete();
 
       }, 250);
