@@ -2,8 +2,42 @@
 <html lang="id" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Selamanya Itu Lama Banget — Reader</title>
+
+  <!-- ============================================================
+       FEATURE — SEO & SOCIAL SHARE PREVIEW (Open Graph + Twitter Card)
+       Dipakai oleh crawler WhatsApp, Facebook/Meta Sharing Debugger,
+       Telegram, Discord, dll untuk menampilkan kartu preview saat
+       link domain ini dibagikan.
+
+       PENTING — ini wajib URL ABSOLUT (bukan relatif "asset/preview.jpg"),
+       karena crawler pihak ketiga (WhatsApp dkk) tidak selalu resolve
+       path relatif dengan benar. Sesuaikan domain di bawah kalau
+       domain Vercel berubah, dan pastikan file gambarnya benar‑benar
+       ada di "asset/preview.jpg" (huruf besar/kecil harus identik
+       dengan nama folder yang di-deploy).
+       ============================================================ -->
+  <meta name="description" content="Selamanya Itu Lama Banget — novel digital kisah Ariel & Alie. Baca langsung di browser, lengkap dengan musik latar, mode fokus, dan catatan pribadi per bab.">
+  <link rel="canonical" href="https://novel-ariel-alie.vercel.app/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Selamanya Itu Lama Banget">
+  <meta property="og:locale" content="id_ID">
+  <meta property="og:url" content="https://novel-ariel-alie.vercel.app/">
+  <meta property="og:title" content="Selamanya Itu Lama Banget">
+  <meta property="og:description" content="Novel digital kisah Ariel & Alie. Baca langsung di browser, lengkap dengan musik latar, mode fokus, dan catatan pribadi per bab.">
+  <meta property="og:image" content="https://novel-ariel-alie.vercel.app/asset/preview.jpg">
+  <meta property="og:image:secure_url" content="https://novel-ariel-alie.vercel.app/asset/preview.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Selamanya Itu Lama Banget — Novel Ariel & Alie">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Selamanya Itu Lama Banget">
+  <meta name="twitter:description" content="Novel digital kisah Ariel & Alie. Baca langsung di browser, lengkap dengan musik latar, mode fokus, dan catatan pribadi per bab.">
+  <meta name="twitter:image" content="https://novel-ariel-alie.vercel.app/asset/preview.jpg">
 
   <!-- ============================================================
        FEATURE — OFFLINE PWA SUPPORT (manifest & ikon)
@@ -79,6 +113,36 @@
       display: flex;
       flex-direction: column;
     }
+
+    /* ====================================================
+       FEATURE — MATIKAN VISUAL SELEKSI TEKS (highlight biru)
+       Pembaca sudah punya menu sendiri (long-press paragraf →
+       Bookmark / Copy Quote), jadi seleksi teks bawaan browser
+       dimatikan di seluruh halaman, baik di mobile maupun
+       desktop, supaya tidak mengganggu pengalaman membaca.
+       -webkit-touch-callout dimatikan juga agar bubble
+       "Copy/Look Up" iOS tidak muncul saat long-press paragraf.
+       Input & textarea dikecualikan supaya tetap bisa diketik
+       dan diseleksi seperti biasa (kotak pencarian & catatan).
+       ==================================================== */
+    body, p, h1, h2, h3, h4, span, a, button, li, .prose, .dialogue, .inner-thought {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    input, textarea, [contenteditable="true"] {
+      -webkit-user-select: text;
+      -moz-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+      -webkit-touch-callout: default;
+    }
+
+    ::selection { background: transparent; }
+    ::-moz-selection { background: transparent; }
 
     /* Header & Navigation Bar */
     header {
@@ -1049,6 +1113,36 @@
     }
 
     .toast.show {
+      opacity: 0.95;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ====================================================
+       FEATURE — BOTTOM HINT (notifikasi swipe Focus Mode)
+       Muncul di bagian bawah layar saat Focus Mode diaktifkan,
+       memberitahu pembaca bahwa swipe kiri/kanan untuk pindah
+       bab sudah aktif.
+       ==================================================== */
+    .bottom-hint {
+      position: fixed;
+      bottom: max(24px, env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--ink);
+      color: var(--bg-cream);
+      padding: 0.65rem 1.1rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-align: center;
+      max-width: 86%;
+      z-index: 998;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .bottom-hint.show {
       opacity: 0.95;
       transform: translateX(-50%) translateY(0);
     }
@@ -2371,6 +2465,9 @@
 
   <!-- Toast Notification element -->
   <div class="toast" id="toast"></div>
+
+  <!-- Bottom Hint Notification element (Focus Mode swipe hint) -->
+  <div class="bottom-hint" id="bottom-hint"></div>
 
   <!-- Ending Cinematic Overlay -->
   <div id="ending-cinematic">
@@ -7580,6 +7677,7 @@
     const settingsPanel = document.getElementById('settings-panel');
     const fontSizeVal = document.getElementById('font-size-val');
     const toast = document.getElementById('toast');
+    const bottomHint = document.getElementById('bottom-hint');
     const focusModeBtn = document.getElementById('focus-mode-btn');
     const notesBtn = document.getElementById('notes-btn');
     const notesSheet = document.getElementById('notes-sheet');
@@ -7916,14 +8014,35 @@
         }
       });
 
+      // ====================================================
+      // FEATURE — SWIPE GANTI BAB (HANYA AKTIF SAAT FOCUS MODE)
+      // Di luar Focus Mode, swipe kiri/kanan dimatikan supaya tidak
+      // tertukar dengan gestur scroll biasa. Swipe baru berfungsi
+      // ketika Focus Mode menyala (lihat initFocusMode → showBottomHint).
+      // ====================================================
       let touchStartX = 0;
+      let touchStartY = 0;
       let touchEndX = 0;
-      document.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, false);
+      let swipeTrackingActive = false;
+
+      document.addEventListener('touchstart', (e) => {
+        swipeTrackingActive = document.body.classList.contains('focus-mode') &&
+          !!e.target.closest('main');
+        if (!swipeTrackingActive || !e.changedTouches[0]) return;
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+      }, false);
+
       document.addEventListener('touchend', (e) => {
+        if (!swipeTrackingActive || !e.changedTouches[0]) return;
+        swipeTrackingActive = false;
         touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
         const threshold = 80;
         const swipeLength = touchEndX - touchStartX;
-        if (Math.abs(swipeLength) > threshold) {
+        const verticalDrift = Math.abs(touchEndY - touchStartY);
+        // Pastikan gerakan dominan horizontal (bukan scroll vertikal)
+        if (Math.abs(swipeLength) > threshold && verticalDrift < 60) {
           changeChapter(swipeLength < 0 ? 1 : -1);
         }
       }, false);
@@ -8035,15 +8154,35 @@
         // Logika Long Press (Tekan & Tahan)
         let pressTimer = null;
         let longPressed = false;
+        let pressStartX = 0;
+        let pressStartY = 0;
+        const MOVE_CANCEL_THRESHOLD = 10; // px toleransi gerak jari sebelum dianggap scroll
 
         const onPressStart = (e) => {
           longPressed = false;
+          if (e.touches && e.touches[0]) {
+            pressStartX = e.touches[0].clientX;
+            pressStartY = e.touches[0].clientY;
+          }
           button.classList.add('pressing');
           pressTimer = setTimeout(() => {
             longPressed = true;
             button.classList.remove('pressing');
             toggleFavorite(idx);
           }, 800); // Waktu hold 800 milidetik
+        };
+
+        // Kalau jari bergerak (user sedang scroll daftar bab, bukan menahan
+        // tombol), batalkan timer long-press supaya fitur favorit tidak
+        // ke-trigger tanpa sengaja saat mengscroll.
+        const onPressMove = (e) => {
+          if (!pressTimer || !e.touches || !e.touches[0]) return;
+          const dx = Math.abs(e.touches[0].clientX - pressStartX);
+          const dy = Math.abs(e.touches[0].clientY - pressStartY);
+          if (dx > MOVE_CANCEL_THRESHOLD || dy > MOVE_CANCEL_THRESHOLD) {
+            clearTimeout(pressTimer);
+            button.classList.remove('pressing');
+          }
         };
 
         const onPressEnd = () => {
@@ -8058,6 +8197,7 @@
 
         // Event Mobile
         button.addEventListener('touchstart', onPressStart, { passive: true });
+        button.addEventListener('touchmove', onPressMove, { passive: true });
         button.addEventListener('touchend', onPressEnd);
         button.addEventListener('touchcancel', onPressEnd);
 
@@ -8220,9 +8360,46 @@
     }
 
     /* ===============================================================
+       FEATURE — FULLSCREEN HELPER (dipakai oleh Focus Mode)
+       Mencoba masuk/keluar fullscreen browser dengan vendor prefix
+       (Chrome/Edge Android mendukung penuh). Gagal secara diam-diam
+       (graceful) di browser yang tidak mendukung Fullscreen API untuk
+       elemen sembarang — misalnya Safari iOS, yang membatasi API ini.
+       Di Safari iOS, Focus Mode tetap berjalan normal (header & bottom
+       nav tetap tersembunyi via CSS), hanya address bar browser yang
+       mungkin tidak ikut hilang karena keterbatasan platform tersebut.
+    =============================================================== */
+    function enterFullscreen() {
+      const el = document.documentElement;
+      const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+      if (!req) return;
+      try {
+        const result = req.call(el);
+        if (result && typeof result.catch === 'function') result.catch(() => {});
+      } catch (err) {
+        // Graceful fallback — biarkan Focus Mode tetap aktif tanpa fullscreen
+      }
+    }
+
+    function exitFullscreen() {
+      const isInFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+      if (!isInFullscreen) return;
+      const exit = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+      if (!exit) return;
+      try {
+        const result = exit.call(document);
+        if (result && typeof result.catch === 'function') result.catch(() => {});
+      } catch (err) {
+        // Graceful fallback
+      }
+    }
+
+    /* ===============================================================
        FEATURE — FOCUS READING MODE
        Menyembunyikan header, bottom nav, audio FAB, dan progress
        indicator. Tap pada konten saat aktif men-toggle UI sementara.
+       Saat aktif: masuk fullscreen browser & swipe kiri/kanan untuk
+       pindah bab ikut aktif (dengan notifikasi singkat di bagian bawah).
     =============================================================== */
     function initFocusMode() {
       if (!focusModeBtn) return;
@@ -8232,7 +8409,29 @@
         document.body.classList.remove('focus-ui-visible');
         localStorage.setItem('novel-focus-mode', isActive ? 'true' : 'false');
         vibrate(15);
-        showToast(isActive ? '👁️ Focus Mode aktif' : '👁️ Focus Mode nonaktif');
+
+        if (isActive) {
+          enterFullscreen();
+          showToast('👁️ Focus Mode aktif');
+          showBottomHint('👈 Geser layar ke kiri / kanan untuk pindah bab 👉');
+        } else {
+          exitFullscreen();
+          showToast('👁️ Focus Mode nonaktif');
+        }
+      });
+
+      // Kalau fullscreen keluar sendiri (mis. tombol back Android, gesture
+      // sistem, atau Esc di desktop), sinkronkan Focus Mode supaya UI
+      // (header/bottom nav) tidak "nyangkut" tersembunyi tanpa cara keluar.
+      const syncFocusModeWithFullscreen = () => {
+        const isInFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
+        if (!isInFullscreen && document.body.classList.contains('focus-mode')) {
+          document.body.classList.remove('focus-mode', 'focus-ui-visible');
+          localStorage.setItem('novel-focus-mode', 'false');
+        }
+      };
+      ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach((evt) => {
+        document.addEventListener(evt, syncFocusModeWithFullscreen);
       });
     }
 
@@ -8399,11 +8598,20 @@
 
       let pressTimer = null;
       let longPressTriggered = false;
+      let pressTarget = null;
+      let pressStartX = 0;
+      let pressStartY = 0;
+      const MOVE_CANCEL_THRESHOLD = 10; // px toleransi gerak jari sebelum dianggap scroll
 
       const onPressStart = (e) => {
         const target = e.target.closest(getParagraphSelector());
         if (!target || !chapterContainer.contains(target)) return;
         longPressTriggered = false;
+        pressTarget = target;
+        if (e.touches && e.touches[0]) {
+          pressStartX = e.touches[0].clientX;
+          pressStartY = e.touches[0].clientY;
+        }
         target.classList.add('para-pressing');
         pressTimer = setTimeout(() => {
           longPressTriggered = true;
@@ -8412,16 +8620,31 @@
         }, 650);
       };
 
+      // Kalau jari bergerak (user sedang scroll halaman novel, bukan menahan
+      // paragraf), batalkan timer long-press supaya menu Bookmark/Copy Quote
+      // tidak ke-trigger tanpa sengaja saat mengscroll.
+      const onPressMove = (e) => {
+        if (!pressTimer || !e.touches || !e.touches[0]) return;
+        const dx = Math.abs(e.touches[0].clientX - pressStartX);
+        const dy = Math.abs(e.touches[0].clientY - pressStartY);
+        if (dx > MOVE_CANCEL_THRESHOLD || dy > MOVE_CANCEL_THRESHOLD) {
+          clearTimeout(pressTimer);
+          if (pressTarget) pressTarget.classList.remove('para-pressing');
+        }
+      };
+
       const onPressEnd = (e) => {
         clearTimeout(pressTimer);
         const target = e.target.closest ? e.target.closest(getParagraphSelector()) : null;
         if (target) target.classList.remove('para-pressing');
+        if (pressTarget) pressTarget.classList.remove('para-pressing');
       };
 
       chapterContainer.addEventListener('mousedown', onPressStart);
       chapterContainer.addEventListener('mouseup', onPressEnd);
       chapterContainer.addEventListener('mouseleave', onPressEnd);
       chapterContainer.addEventListener('touchstart', onPressStart, { passive: true });
+      chapterContainer.addEventListener('touchmove', onPressMove, { passive: true });
       chapterContainer.addEventListener('touchend', onPressEnd);
       chapterContainer.addEventListener('touchcancel', onPressEnd);
 
@@ -9125,6 +9348,17 @@
       toast.textContent = message;
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    // FEATURE — Notifikasi bawah, dipakai untuk memberi tahu pembaca
+    // bahwa swipe kiri/kanan untuk pindah bab aktif saat Focus Mode menyala.
+    let bottomHintTimer = null;
+    function showBottomHint(message, duration = 3200) {
+      if (!bottomHint) return;
+      bottomHint.textContent = message;
+      bottomHint.classList.add('show');
+      clearTimeout(bottomHintTimer);
+      bottomHintTimer = setTimeout(() => bottomHint.classList.remove('show'), duration);
     }
 
     /* ===============================================================
