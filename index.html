@@ -2137,6 +2137,105 @@
       cursor: pointer;
       white-space: nowrap;
     }
+
+    /* ====================================================
+       POPUP — WIP NOTICE (Bab LXXVIII - Bab CX)
+       ==================================================== */
+    #wip-popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    #wip-popup-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #wip-popup-box {
+      background: var(--bg-card);
+      border: 1px solid var(--rule);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 4px 16px rgba(0,0,0,0.15);
+      max-width: 480px;
+      width: 100%;
+      padding: 2rem 2rem 1.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transform: translateY(18px) scale(0.97);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease;
+      opacity: 0;
+    }
+    #wip-popup-overlay.visible #wip-popup-box {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    #wip-popup-icon {
+      font-size: 2rem;
+      text-align: center;
+      line-height: 1;
+    }
+    #wip-popup-title {
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--ink);
+      text-align: center;
+      line-height: 1.35;
+    }
+    #wip-popup-body {
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      text-align: center;
+    }
+    #wip-popup-body strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    #wip-popup-rule {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 0;
+    }
+    #wip-popup-actions {
+      display: flex;
+      gap: 0.65rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .wip-btn {
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 50px;
+      padding: 0.55rem 1.4rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      outline: none;
+    }
+    .wip-btn-primary {
+      background: var(--accent);
+      color: var(--btn-active-text);
+    }
+    .wip-btn-primary:hover { background: var(--accent-hover); }
+    .wip-btn-secondary {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--rule);
+    }
+    .wip-btn-secondary:hover { color: var(--ink); border-color: var(--ink); }
   </style>
 </head>
 <body>
@@ -2159,6 +2258,25 @@
     </p>
   </div>
   <!-- ======================================================= -->
+
+  <!-- =================== WIP NOTICE POPUP =================== -->
+  <div id="wip-popup-overlay" role="dialog" aria-modal="true" aria-label="Pemberitahuan Pengerjaan">
+    <div id="wip-popup-box">
+      <div id="wip-popup-icon">✍️</div>
+      <p id="wip-popup-title">Catatan untuk Pembaca</p>
+      <p id="wip-popup-body">
+        Bab <strong>LXXVIII hingga CX</strong> saat ini masih dalam masa pengerjaan.
+        <br><br>
+        Mohon maaf bila ada <em>typo</em>, alur yang terasa belum sempurna, atau detail yang belum konsisten — semuanya masih dalam proses penyempurnaan. Terima kasih atas pengertian dan kesabarannya. ✦
+      </p>
+      <hr id="wip-popup-rule">
+      <div id="wip-popup-actions">
+        <button class="wip-btn wip-btn-primary" id="wip-btn-mengerti">Mengerti</button>
+        <button class="wip-btn wip-btn-secondary" id="wip-btn-tutup">Tutup</button>
+      </div>
+    </div>
+  </div>
+  <!-- ========================================================= -->
 
   <!-- Drawer Overlay -->
   <div class="drawer-overlay" id="overlay"></div>
@@ -9714,7 +9832,7 @@
       <div class="scene-break">✦ ✦ ✦</div>
       <p>Alie datang jam empat sore, dengan ketukan pintu yang dua kali dan tidak pernah sekali atau tiga kali, yang Ariel langsung kenal bahkan sebelum membuka pintu.</p>
       <p>Mereka duduk di kamar Ariel dengan cara yang sangat biasa — Alie di kursi meja, Ariel di kasur, jarak yang cukup untuk bicara tanpa harus berteriak dan tidak terlalu dekat untuk merasa terlalu penuh sesak. Cara yang sudah sangat familiar. Cara yang sudah ada lama sebelum Bandung dan akan ada lama setelahnya.</p>
-      <div class="dialogue"><span class="speaker">Alie</span>"Itu suratnya?"div>
+      <div class="dialogue"><span class="speaker">Alie</span>"Itu suratnya?"</div>
       <p>Ia menunjuk ke kain tipis yang masih di meja.</p>
       <div class="dialogue"><span class="speaker">Ariel</span>"Iya."</div>
       <div class="dialogue"><span class="speaker">Alie</span>"Boleh lihat?"</div>
@@ -10427,6 +10545,13 @@
             ? openingChapter.bgm
             : 'default';
           audioManager.play(openingBgm);
+          // Tampilkan WIP popup (kecuali user sudah klik Mengerti sebelumnya)
+          setTimeout(() => {
+            if (!localStorage.getItem('wip_notice_dismissed')) {
+              const wipOverlay = document.getElementById('wip-popup-overlay');
+              if (wipOverlay) wipOverlay.classList.add('visible');
+            }
+          }, 1200);
         }, { once: true });
       }
 
@@ -11800,6 +11925,33 @@
       init();
       runLoadingScreen();
       initPWA(); // FEATURE E — daftarkan Service Worker & siapkan prompt instalasi (non-blocking)
+
+      // ===== WIP POPUP — event listeners =====
+      function closeWipPopup() {
+        const overlay = document.getElementById('wip-popup-overlay');
+        if (overlay) {
+          overlay.classList.remove('visible');
+        }
+      }
+
+      const btnMengerti = document.getElementById('wip-btn-mengerti');
+      const btnTutup    = document.getElementById('wip-btn-tutup');
+
+      if (btnMengerti) {
+        btnMengerti.addEventListener('click', function() {
+          // Simpan ke localStorage agar popup tidak muncul lagi di sesi berikutnya
+          localStorage.setItem('wip_notice_dismissed', '1');
+          closeWipPopup();
+        });
+      }
+
+      if (btnTutup) {
+        btnTutup.addEventListener('click', function() {
+          // Hanya tutup untuk sesi ini saja — tidak menyimpan ke localStorage
+          closeWipPopup();
+        });
+      }
+      // =========================================
     };
   </script>
 </body>
